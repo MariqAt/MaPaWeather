@@ -42,7 +42,7 @@ public class FragmentTomorrowDetails extends WeatherFragment {
     private void bindData() {
         Location currentLocation = AppManager.getInstance().getCurrentLocation();
         DayForecast tomorrowForecast = currentLocation.getForecast().getDayForecasts().get(1);
-        DayDetails tomorrowDetails = currentLocation.getForecast().getDayForecasts().get(1).getDayDetails();
+        DayDetails tomorrowDetails = tomorrowForecast.getDayDetails();
         humidity.setText(String.valueOf(Helper.decimalFormat(tomorrowDetails.getAvgHumidity()).concat(HUMIDITY_SYMBOL)));
         if (WeatherActivity.isImperialUnits) {
             max.setText(String.valueOf(Helper.decimalFormat(tomorrowDetails.getMaxtempF()).concat(CELSIUS_SYMBOL).concat(", ")));

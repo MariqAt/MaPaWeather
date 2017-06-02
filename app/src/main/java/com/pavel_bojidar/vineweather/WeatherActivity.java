@@ -286,20 +286,20 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
 
         int conditionNameLength = conditionToday.length();
         if (conditionNameLength >= 25 && conditionNameLength < 30) {
-            navDrawerCondition.setTextSize(14);
+            navDrawerCondition.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_condition_middle_size));
         } else if (conditionNameLength >= 30) {
-            navDrawerCondition.setTextSize(10);
+            navDrawerCondition.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_condition_min_size));
         } else {
-            navDrawerCondition.setTextSize(16);
+            navDrawerCondition.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_condition_max_size));
         }
 
         int locationNameLength = Helper.filterCityName(currentLocationName).length();
         if (locationNameLength >= 14 && locationNameLength <= 18) {
-            navDrawerLocation.setTextSize(18);
+            navDrawerLocation.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_location_middle_size));
         } else if (locationNameLength > 18) {
-            navDrawerLocation.setTextSize(14);
+            navDrawerLocation.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_location_min_size));
         } else {
-            navDrawerLocation.setTextSize(24);
+            navDrawerLocation.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_location_max_size));
         }
 
         swipeRefresh.setRefreshing(false);
