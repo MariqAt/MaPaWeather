@@ -6,10 +6,10 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="wind_height">28dp</dimen>
     <dimen name="widget_margin">8dp</dimen>
-    <dimen name="nav_draw_location_max_size">24dp</dimen>
-    <dimen name="nav_draw_location_middle_size">18dp</dimen>
-    <dimen name="nav_draw_location_min_size">14dp</dimen>
-    <dimen name="nav_draw_condition_max_size">16dp</dimen>
-    <dimen name="nav_draw_condition_middle_size">14dp</dimen>
-    <dimen name="nav_draw_condition_min_size">10dp</dimen>
+    <dimen name="nav_draw_location_max_size">14dp</dimen>
+    <dimen name="nav_draw_location_middle_size">12dp</dimen>
+    <dimen name="nav_draw_location_min_size">8dp</dimen>
+    <dimen name="nav_draw_condition_max_size">8dp</dimen>
+    <dimen name="nav_draw_condition_middle_size">6dp</dimen>
+    <dimen name="nav_draw_condition_min_size">4dp</dimen>
 </resources>
