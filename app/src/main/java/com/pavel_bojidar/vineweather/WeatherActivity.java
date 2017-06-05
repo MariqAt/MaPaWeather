@@ -80,6 +80,7 @@ import com.pavel_bojidar.vineweather.adapter.RecentListAdapter.RecentSelectedLis
 import com.pavel_bojidar.vineweather.fragment.FragmentForecast;
 import com.pavel_bojidar.vineweather.fragment.FragmentToday;
 import com.pavel_bojidar.vineweather.fragment.FragmentTomorrow;
+import com.pavel_bojidar.vineweather.fragment.NavigationDrawerFragment;
 import com.pavel_bojidar.vineweather.helper.Helper;
 import com.pavel_bojidar.vineweather.model.maindata.CurrentWeather;
 import com.pavel_bojidar.vineweather.popupwindow.CitySearchPopupWindow;
@@ -106,7 +107,7 @@ import static com.pavel_bojidar.vineweather.Constants.KEY_NAME;
 import static com.pavel_bojidar.vineweather.Constants.KEY_RECENT_PLACES;
 import static com.pavel_bojidar.vineweather.Constants.SERVER_CONNECTION_FAILURE;
 
-public class WeatherActivity extends AppCompatActivity implements RecentSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class WeatherActivity extends AppCompatActivity implements RecentSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, NavigationDrawerFragment.ActivityComrunicator {
 
     private DrawerLayout drawer;
     private AppBarLayout appBar;
@@ -124,20 +125,25 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
     private MenuItem search;
     private Timer inputDelay;
     private ImageView navDrawerImage;
-    private TextView navDrawerDegree, navDrawerCondition, noLocationSelected, navDrawerLocation;
-    private Button celsiusButton, fahrenheitButton;
+    private TextView navDrawerDegree;
+    private TextView navDrawerCondition;
+    private TextView noLocationSelected;
+    private TextView navDrawerLocation;
     private AlertDialog alertDialog;
     public static boolean isImperialUnits;
     private int currentTabColor = R.color.todayAppBarColor;
     private int currentTabColorDark = R.color.todayAppBarColorDark;
     private GoogleApiClient mGoogleApiClient;
     private SwipeRefreshLayout swipeRefresh;
-    protected boolean fromLocation, isDay;
+    protected boolean fromLocation;
+    protected boolean isDay;
     private RecentListAdapter recentAdapter;
     private Gson gson = new Gson();
     public static boolean isConnected = true;
-    protected String conditionToday, conditionTomorrow;
-    int[] conditionTodayColorSet, conditionTomorrowColorSet;
+    protected String conditionToday;
+    protected String conditionTomorrow;
+    int[] conditionTodayColorSet;
+    int[] conditionTomorrowColorSet;
     private GradientDrawable gradient;
     public static String widgetLocation;
 
@@ -188,12 +194,6 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
         mGoogleApiClient.disconnect();
         preferences.edit().putBoolean(Constants.UNITS_IMPERIAL, isImperialUnits).apply();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(networkReceiver);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        requestWidgetUpdate();
     }
 
     private void requestWidgetUpdate() {
@@ -286,20 +286,20 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
 
         int conditionNameLength = conditionToday.length();
         if (conditionNameLength >= 25 && conditionNameLength < 30) {
-            navDrawerCondition.setTextSize(14);
+            navDrawerCondition.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_condition_middle_size));
         } else if (conditionNameLength >= 30) {
-            navDrawerCondition.setTextSize(10);
+            navDrawerCondition.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_condition_min_size));
         } else {
-            navDrawerCondition.setTextSize(16);
+            navDrawerCondition.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_condition_max_size));
         }
 
         int locationNameLength = Helper.filterCityName(currentLocationName).length();
         if (locationNameLength >= 14 && locationNameLength <= 18) {
-            navDrawerLocation.setTextSize(18);
+            navDrawerLocation.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_location_middle_size));
         } else if (locationNameLength > 18) {
-            navDrawerLocation.setTextSize(14);
+            navDrawerLocation.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_location_min_size));
         } else {
-            navDrawerLocation.setTextSize(24);
+            navDrawerLocation.setTextSize(getResources().getDimensionPixelSize(R.dimen.nav_draw_location_max_size));
         }
 
         swipeRefresh.setRefreshing(false);
@@ -377,38 +377,6 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
         setSupportActionBar(toolbar);
 
         noLocationSelected = (TextView) findViewById(R.id.no_location);
-        celsiusButton = (Button) findViewById(R.id.nav_drawer_celsius_button);
-        fahrenheitButton = (Button) findViewById(R.id.nav_drawer_fahrenheit_button);
-
-        if (isImperialUnits) {
-            fahrenheitButton.getBackground().clearColorFilter();
-            celsiusButton.getBackground().setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
-        } else {
-            celsiusButton.getBackground().clearColorFilter();
-            fahrenheitButton.getBackground().setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
-        }
-
-        celsiusButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isImperialUnits = false;
-                celsiusButton.getBackground().clearColorFilter();
-                fahrenheitButton.getBackground().setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
-                drawer.closeDrawer(GravityCompat.START);
-                onUnitSwapped();
-            }
-        });
-
-        fahrenheitButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isImperialUnits = true;
-                fahrenheitButton.getBackground().clearColorFilter();
-                celsiusButton.getBackground().setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
-                drawer.closeDrawer(GravityCompat.START);
-                onUnitSwapped();
-            }
-        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View hView = navigationView.getHeaderView(0);
@@ -637,7 +605,7 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
                         }
                         if (searchPopupWindow.isShowing()) {
                             searchPopupWindow.setSoftInputMode(LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                            showKeyboard();
+                            showKeyboard(getCurrentFocus());
                             searchPopupWindow.getListView().setOnItemClickListener(new OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -727,7 +695,7 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
                 if (!searchField.hasFocus()) {
                     searchField.requestFocus();
                     search.setIcon(R.drawable.ic_close_black_24dp);
-                    showKeyboard();
+                    showKeyboard(getCurrentFocus());
                 } else {
                     if (searchField.getText().length() > 0) {
                         searchField.setText(null);
@@ -920,10 +888,6 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
         super.onBackPressed();
     }
 
-    public void showKeyboard() {
-        showKeyboard(getCurrentFocus());
-    }
-
     public void showKeyboard(View focusedView) {
         if (focusedView != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -937,5 +901,11 @@ public class WeatherActivity extends AppCompatActivity implements RecentSelected
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void react() {
+        drawer.closeDrawer(GravityCompat.START);
+        onUnitSwapped();
     }
 }

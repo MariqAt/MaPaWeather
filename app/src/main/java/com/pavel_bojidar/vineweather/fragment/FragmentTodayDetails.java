@@ -15,6 +15,8 @@ import com.pavel_bojidar.vineweather.Constants;
 import com.pavel_bojidar.vineweather.R;
 import com.pavel_bojidar.vineweather.WeatherActivity;
 import com.pavel_bojidar.vineweather.helper.Helper;
+import com.pavel_bojidar.vineweather.model.DayForecast;
+import com.pavel_bojidar.vineweather.model.maindata.CurrentWeather;
 import com.pavel_bojidar.vineweather.model.maindata.Location;
 import com.pavel_bojidar.vineweather.singleton.AppManager;
 
@@ -36,20 +38,22 @@ public class FragmentTodayDetails extends WeatherFragment {
 
     private void bindData() {
         Location currentLocation = AppManager.getInstance().getCurrentLocation();
+        CurrentWeather currentWeather = currentLocation.getCurrentWeather();
+        DayForecast dayForecast = currentLocation.getForecast().getDayForecasts().get(0);
         humidity.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getHumidity()) + " " + Constants.HUMIDITY_SYMBOL);
         if (WeatherActivity.isImperialUnits) {
-            wind.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getWindMph()) + " " + Constants.MPH);
-            pressure.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getPressureIn()).concat(Constants.IN));
-            visibility.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getVisabilityMi()) + " " + Constants.M);
+            wind.setText(Helper.decimalFormat(currentWeather.getWindMph()) + " " + Constants.MPH);
+            pressure.setText(Helper.decimalFormat(currentWeather.getPressureIn()).concat(Constants.IN));
+            visibility.setText(Helper.decimalFormat(currentWeather.getVisabilityMi()) + " " + Constants.M);
         } else {
-            wind.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getWindKph()) + " " + Constants.KM_H);
-            pressure.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getPressureMb()).concat(Constants.KEY_PRESSURE_MBar));
-            visibility.setText(Helper.decimalFormat(currentLocation.getCurrentWeather().getVisabilityKm()) + " " + Constants.KM);
+            wind.setText(Helper.decimalFormat(currentWeather.getWindKph()) + " " + Constants.KM_H);
+            pressure.setText(Helper.decimalFormat(currentWeather.getPressureMb()).concat(Constants.KEY_PRESSURE_MBar));
+            visibility.setText(Helper.decimalFormat(currentWeather.getVisabilityKm()) + " " + Constants.KM);
         }
-        sunDetail.setText(currentLocation.getForecast().getDayForecasts().get(0).getSunrise().concat(", ")
-                .concat(currentLocation.getForecast().getDayForecasts().get(0).getSunset()));
-        moonDetail.setText(currentLocation.getForecast().getDayForecasts().get(0).getMoonrise().concat(", ")
-                .concat(currentLocation.getForecast().getDayForecasts().get(0).getMoonset()));
+        sunDetail.setText(dayForecast.getSunrise().concat(", ")
+                .concat(dayForecast.getSunset()));
+        moonDetail.setText(dayForecast.getMoonrise().concat(", ")
+                .concat(dayForecast.getMoonset()));
     }
 
     @Override

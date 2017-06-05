@@ -120,7 +120,7 @@ public class FragmentToday extends WeatherFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new HourlyTempAdapter(currentDay.getHourForecasts(), 0));
 
-        parent.setBackgroundDrawable(Helper.chooseFragmentBackground(parent.getContext(),
+        parent.setBackground(Helper.chooseFragmentBackground(parent.getContext(),
                 currentLocation.getCurrentWeather().getCondition().getText(),
                 currentLocation.getCurrentWeather().getIsDay() == 1));
     }
